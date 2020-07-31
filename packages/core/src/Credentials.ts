@@ -342,6 +342,7 @@ export class CredentialsClass {
 	private _setCredentialsFromSession(session): Promise<ICredentials> {
 		logger.debug('set credentials from session');
 		const idToken = session.getIdToken().getJwtToken();
+		const issuer = session.getIdToken().payload.iss;
 		const { region, userPoolId, identityPoolId } = this._config;
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
@@ -353,7 +354,7 @@ export class CredentialsClass {
 				'region is not configured for getting the credentials'
 			);
 		}
-		const key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
+		const key = issuer.replace('https://', '');
 		const logins = {};
 		logins[key] = idToken;
 
